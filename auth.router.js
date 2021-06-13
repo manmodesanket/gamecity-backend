@@ -9,6 +9,7 @@ const secret = "ksdnfaisodjfaiofj";
  
 
 router.post("/login", async (req, res) => {
+  console.log("entering login");
   const { username, password } = req.body.user;
   const user = await Auth.find({username});
   const token = jwt.sign({ userID: username}, secret, { expiresIn: '24h'})

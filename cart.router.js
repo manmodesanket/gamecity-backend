@@ -11,7 +11,7 @@ router
   })
 
   .post("/", async (req, res) => {
-    const {username, cartItem} = req.body.user;
+    const {username, cartItem, action} = req.body.query;
     let cartForUser = await Cart.findOne({username});
     //const user = await Auth.find({username});
     console.log(username);
@@ -28,9 +28,22 @@ router
         res.status(500).json({success: false, error});    
       }
     }
-    else {
+    else if(action === "add") {
       try {
         let cartList = [...cartForUser.cartList, cartItem];
+        const newCart = await Cart({username, cartList});
+        //first delete the existing document and then save new document
+        await Cart.deleteOne({ username });
+        const savedCart = await newCart.save();
+        res.status(200).json({success: true, savedCart});
+      }
+      catch(error) {
+        res.status(500).json({success: false, error});    
+      }
+    }
+    else if(action === "remove") {
+      try {
+        let cartList = cartForUser.cartList.filter(item => item !== cartItem);
         const newCart = await Cart({username, cartList});
         //first delete the existing document and then save new document
         await Cart.deleteOne({ username });

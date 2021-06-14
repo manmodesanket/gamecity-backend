@@ -10,10 +10,20 @@ const secret = "ksdnfaisodjfaiofj";
 
 router.post("/login", async (req, res) => {
   console.log("entering login");
-  const { username, password } = req.body.user;
-  const user = await Auth.find({username});
-  const token = jwt.sign({ userID: username}, secret, { expiresIn: '24h'})
-  res.json({ username, token })
+  const { uname, pswd } = req.body.user;
+  try {
+    const {username, password} = await Auth.findOne({username: uname});
+    if(pswd === password) {
+      const token = jwt.sign({ userID: username}, secret, { expiresIn: '24h'})
+      return res.status(201).json({ success: true, username, token })
+    }
+    else {
+      return res.status(401).json({ success: false, message: "Unauthorised access"})  
+    }
+  }
+  catch (error) {
+    return res.status(500).json({ success: false, error})
+  }
 })
 
 router.post("/signup", async (req, res) => {
@@ -23,8 +33,8 @@ router.post("/signup", async (req, res) => {
       const savedUser = await newUser.save();
       res.status(201).json({success: true, user: savedUser, message: "Signed up!"})
     }
-    catch(e) {
-      res.status(500).json({success: false, error: e})
+    catch(error) {
+      res.status(500).json({success: false, error})
     }
 })
 

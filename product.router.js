@@ -21,7 +21,6 @@ router.route("/")
     catch(e) {
       res.status(500).json({success: false, error: e})
     }
-    
   });
 
 router.route("/newrelease")

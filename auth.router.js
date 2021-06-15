@@ -9,8 +9,7 @@ const secret = "ksdnfaisodjfaiofj";
  
 
 router.post("/login", async (req, res) => {
-  console.log("entering login");
-  const { uname, pswd } = req.body.user;
+  const { uname, pswd } = req.body;
   try {
     const {username, password} = await Auth.findOne({username: uname});
     if(pswd === password) {
@@ -41,9 +40,8 @@ router.post("/signup", async (req, res) => {
 router.get('/user', (req, res) => {
   try {
     const token = req.headers.authorization;
-    console.log({ token })
-    const decoded = jwt.verify(token, secret);
-    res.json(decoded);
+    const {userID} = jwt.verify(token, secret);
+    res.status(200).json({success: true, userID});
   }
   catch (error) {
     console.log(error)

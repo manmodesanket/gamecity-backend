@@ -12,15 +12,18 @@ router
 
   .post("/", async (req, res) => {
     const {username, cartItem, action} = req.body.query;
+    console.log(req.body.query);
     let cartForUser = await Cart.findOne({username});
     //const user = await Auth.find({username});
     console.log(username);
     console.log(cartForUser);
 
-    if(cartForUser === undefined || cartForUser === null) {
+    if(action === "add") {
+      if(cartForUser === undefined || cartForUser === null) {
       let cartList = [cartItem];
       try {
         const newCart = new Cart({username, cartList});
+        console.log("27", newCart);
         const savedCart = await newCart.save();
         res.status(201).json({success: true, data: savedCart, message: "Cart created!"})
       }
@@ -28,10 +31,11 @@ router
         res.status(500).json({success: false, error});    
       }
     }
-    else if(action === "add") {
+    else {
       try {
         let cartList = [...cartForUser.cartList, cartItem];
         const newCart = await Cart({username, cartList});
+        console.log("39", newCart);
         //first delete the existing document and then save new document
         await Cart.deleteOne({ username });
         const savedCart = await newCart.save();
@@ -40,6 +44,8 @@ router
       catch(error) {
         res.status(500).json({success: false, error});    
       }
+    }
+      
     }
     else if(action === "remove") {
       try {

@@ -6,8 +6,10 @@ const { Cart } = require("./model/cart.model");
 const { Auth } = require("./model/auth.model");
 
 router
-  .get("/", (req, res) => {
-    res.status(200).json({success: true})
+  .get("/", async (req, res) => {
+    let {username} = req.query;
+    let cartForUser = await Cart.findOne({username});
+    res.status(200).json({success: true, cartForUser})
   })
 
   .post("/", async (req, res) => {
@@ -17,7 +19,11 @@ router
 
     if(action === "add") {
       if(cartForUser === undefined || cartForUser === null) {
-      let cartList = [cartItem];
+      let item = {
+        id: cartItem,
+        quantity: 1
+      }  
+      let cartList = [item];
       try {
         const newCart = new Cart({username, cartList});
         const savedCart = await newCart.save();
@@ -29,7 +35,12 @@ router
     }
     else {
       try {
-        let cartList = [...cartForUser.cartList, cartItem];
+
+        let item = {
+          id: cartItem,
+          quantity: 1
+        }  
+        let cartList = [...cartForUser.cartList, item];
         const newCart = await Cart({username, cartList});
         //first delete the existing document and then save new document
         await Cart.deleteOne({ username });
@@ -44,11 +55,13 @@ router
     }
     else if(action === "remove") {
       try {
-        let cartList = cartForUser.cartList.filter(item => item !== cartItem);
+        console.log(cartItem);
+        let cartList = cartForUser.cartList.filter(item => item.id !== cartItem);
         const newCart = await Cart({username, cartList});
         //first delete the existing document and then save new document
         await Cart.deleteOne({ username });
         const savedCart = await newCart.save();
+        console.log(savedCart);
         res.status(204).json({success: true, savedCart});
       }
       catch(error) {

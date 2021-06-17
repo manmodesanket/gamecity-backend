@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const { Auth } = require("./model/auth.model");
 
-const secret = "ksdnfaisodjfaiofj";
+const secret = process.env['secret'];
  
 
 router.post("/login", async (req, res) => {

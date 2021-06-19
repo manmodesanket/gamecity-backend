@@ -3,7 +3,6 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 const { Cart } = require("./model/cart.model");
-const { Auth } = require("./model/auth.model");
 
 router
   .get("/", async (req, res) => {
@@ -13,9 +12,8 @@ router
   })
 
   .post("/", async (req, res) => {
-    const {username, cartItem, action} = req.body;
+    const {username, cartItem, action, actiontype} = req.body.query;
     let cartForUser = await Cart.findOne({username});
-    //const user = await Auth.find({username});
 
     if(action === "add") {
       if(cartForUser === undefined || cartForUser === null) {
@@ -55,14 +53,49 @@ router
     }
     else if(action === "remove") {
       try {
-        console.log(cartItem);
         let cartList = cartForUser.cartList.filter(item => item.id !== cartItem);
         const newCart = await Cart({username, cartList});
         //first delete the existing document and then save new document
         await Cart.deleteOne({ username });
         const savedCart = await newCart.save();
-        console.log(savedCart);
         res.status(204).json({success: true, savedCart});
+      }
+      catch(error) {
+        res.status(500).json({success: false, error});    
+      }
+    }
+    else if(action === "update") {
+      console.log("update");
+      let cartList = [];
+      try {
+        if(actiontype === "INC") {
+          console.log("INC")
+          cartList = cartForUser.cartList.map(item => {
+            if(item.id === cartItem && item.quantity < 4) {
+              item.quantity = item.quantity + 1;
+            }
+            return item;
+          })
+          const newCart = await Cart({username, cartList});
+          //first delete the existing document and then save new document
+          await Cart.deleteOne({ username });
+          const savedCart = await newCart.save();
+          res.status(201).json({success: true, savedCart});
+        }
+        else if(actiontype === "DESC") {
+          console.log("DESC")
+          cartList = cartForUser.cartList.map(item => {
+            if(item.id === cartItem && item.quantity > 0) {
+              item.quantity = item.quantity - 1;
+            }
+            return item;
+          })
+          const newCart = await Cart({username, cartList});
+          //first delete the existing document and then save new document
+          await Cart.deleteOne({ username });
+          const savedCart = await newCart.save();
+          res.status(201).json({success: true, savedCart});
+        }
       }
       catch(error) {
         res.status(500).json({success: false, error});    

@@ -7,8 +7,8 @@ const { Wishlist } = require("./model/wishlist.model");
 router
   .get("/", async (req, res) => {
     let {username} = req.query;
-    let cartForUser = await Wishlist.findOne({username});
-    res.status(200).json({success: true, cartForUser})
+    let wishlistForUser = await Wishlist.findOne({username});
+    res.status(200).json({success: true, wishlistForUser})
   })
 
   .post("/", async (req, res) => {

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 function initializeDBConnection () {
-  mongoose.connect('mongodb+srv://sankeman:ninja@1810@neog-cluster.blrhx.mongodb.net/buygames', { useNewUrlParser: true, useUnifiedTopology: true });
+  const mongoKey = process.env['mongoSecret'];
+  mongoose.connect(mongoKey, { useNewUrlParser: true, useUnifiedTopology: true });
 
   mongoose.set('useFindAndModify', false);
 }

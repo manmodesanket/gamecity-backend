@@ -26,11 +26,22 @@ router.post("/login", async (req, res) => {
 })
 
 router.post("/signup", async (req, res) => {
-  const user = req.body.user;
-  const newUser = new Auth(user);
+  console.log("hi");
+  const {uname, pswd} = req.body.user;
+  
   try {
-      const savedUser = await newUser.save();
-      res.status(201).json({success: true, user: savedUser, message: "Signed up!"})
+      console.log(uname, pswd);
+       
+      const response = await Auth.findOne({username: uname});
+      if(response !== null) {
+         res.status(409).json({success: false, message: "Username Already Exist!"})
+      }
+      else {
+        const newUser = new Auth({username: uname, password: pswd});
+        const savedUser = await newUser.save();
+        const token = jwt.sign({ userID: uname}, secret, { expiresIn: '24h'})
+        res.status(201).json({success: true, user: savedUser.username, token, message: "Signed up!"});
+      }
     }
     catch(error) {
       res.status(500).json({success: false, error})

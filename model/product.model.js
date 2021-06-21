@@ -9,7 +9,8 @@ const ProductSchema = new mongoose.Schema({
   platform: Number,
   category: Number,
   stock: Number,
-  newRelease: Boolean
+  newRelease: Boolean,
+  trending: Boolean
 });
 
 const Product = mongoose.model('Product', ProductSchema);

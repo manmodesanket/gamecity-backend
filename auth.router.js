@@ -29,8 +29,6 @@ router.post("/signup", async (req, res) => {
   const {uname, pswd, displayName} = req.body.user;
   
   try {
-      console.log(uname, pswd);
-       
       const response = await Auth.findOne({username: uname});
       if(response !== null) {
          res.status(409).json({success: false, message: "Username Already Exist!"})
@@ -43,7 +41,6 @@ router.post("/signup", async (req, res) => {
       }
     }
     catch(error) {
-      console.log(error);
       res.status(500).json({success: false, error})
     }
 })
@@ -55,7 +52,6 @@ router.get('/user', (req, res) => {
     res.status(200).json({success: true, userID, displayName});
   }
   catch (error) {
-    console.log(error)
     return res.status(401).json({ message: "Unauthorised access, please add the token"})
   }
   

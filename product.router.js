@@ -13,7 +13,6 @@ router.route("/")
   .post(async (req, res) => {
     const product = req.body;
     const newProduct = new Product(product);
-    console.log(newProduct);
     try {
       const savedProduct = await newProduct.save();
       res.status(201).json({success: true, product: savedProduct})
@@ -32,7 +31,6 @@ router.route("/newrelease")
 .post(async (req, res) => {
   const product = req.body;
   const newProduct = new Product(product);
-  console.log(newProduct);
   try {
     const savedProduct = await newProduct.save();
     res.status(201).json({success: true, product: savedProduct})

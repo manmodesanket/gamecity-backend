@@ -29,7 +29,12 @@ router
     }
     else {
       try {
-
+        let {wishlist} = wishListForUser;
+          for(let i = 0; i < wishlist.length; i++) {
+            if(wishlist[i].id === wishItem) {
+              throw new Error("Item Already exists")
+            }
+          } 
         let wishlist = [...wishListForUser.wishlist, wishItem];
         const newWishList = await Wishlist({username, wishlist});
         //first delete the existing document and then save new document
